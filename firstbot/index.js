@@ -42,10 +42,10 @@ if (process.env.MONGOLAB_URI) {
  * Are being run as an app or a custom integration? The initialization will differ, depending
  */
 
-if (process.env.TOKEN || process.env.TOKEN_ID {
+if (process.env.TOKEN || process.env.SLACK_TOKEN) {
     //Treat this as a custom integration
     var customIntegration = require('./lib/custom_integrations');
-    var token = (process.env.TOKEN) ? process.env.TOKEN : process.env.TOKEN_ID;
+    var token = (process.env.TOKEN) ? process.env.TOKEN : process.env.SLACK_TOKEN;
     var controller = customIntegration.configure(token, config, onInstallation);
 } else if (process.env.CLIENT_ID && process.env.CLIENT_SECRET && process.env.PORT) {
     //Treat this as an app
@@ -85,9 +85,39 @@ controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here!")
 });
 
-controller.hears('hello', 'direct_message', function (bot, message) {
-    bot.reply(message, 'Hello!');
+controller.hears(
+    ['hello', 'hi', 'greetings'],
+    ['direct_mention', 'mention', 'direct_message'],
+    function(bot,message) {
+        bot.reply(message,'Hello!');
+    });
+
+
+controller.hears(
+    ['why','how'],
+    ['direct_mention', 'direct_mention', 'direct_message'],
+    function(bot,message) {
+        bot.reply(message, 'That is how it is, and how it always will be.');
+
+
+/** This was for the fuddify project that I found somewhere and didn't work as part of this bot. Ignore for now. We might add it back later.
+
+controller.hears(
+  ['fuddify']
+  ['direct_mention', 'direct_mention', 'direct_message']
+  function fuddify(bot,message) {
+    // if it's not a string return and error message
+    when  bot.reply(message "Nice twy wabbit")
+
+    //otehrwise, make it sound like elmer fuddify
+    speech = speech.replace(/r/g/, 'w')
+    speech = speech.replace(/R/g, 'W')
+    return speech;
+  
+
+
 });
+
 
 
 /**
