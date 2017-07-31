@@ -81,43 +81,49 @@ controller.on('rtm_close', function (bot) {
  */
 // BEGIN EDITING HERE!
 
-controller.on('bot_channel_join', function (bot, message) {
-    bot.reply(message, "I'm here!")
+var Botkit = require('../../lib/Botkit.js');
+
+if (!process.env.token) {
+  console.log('Error: Specify token in environment');
+  process.exit(1);
+}
+
+var controller = Botkit.slackbot({
+ debug: false
 });
 
-controller.hears(
-    ['hello', 'hi', 'greetings'],
-    ['direct_mention', 'mention', 'direct_message'],
-    function(bot,message) {
-        bot.reply(message,'Hello!');
-    });
-
-
-controller.hears(
-    ['why','how'],
-    ['direct_mention', 'direct_mention', 'direct_message'],
-    function(bot,message) {
-        bot.reply(message, 'That is how it is, and how it always will be.');
-
-
-/** This was for the fuddify project that I found somewhere and didn't work as part of this bot. Ignore for now. We might add it back later.
-
-controller.hears(
-  ['fuddify']
-  ['direct_mention', 'direct_mention', 'direct_message']
-  function fuddify(bot,message) {
-    // if it's not a string return and error message
-    when  bot.reply(message "Nice twy wabbit")
-
-    //otehrwise, make it sound like elmer fuddify
-    speech = speech.replace(/r/g/, 'w')
-    speech = speech.replace(/R/g, 'W')
-    return speech;
-  
-
-
+controller.spawn({
+  token: process.env.token
+}).startRTM(function(err) {
+  if (err) {
+    throw new Error(err);
+  }
 });
 
+controller.hears(['Pass the butter'],['ambient','direct_message'],function(bot,message) {
+  bot.startConversation(message, askFlavor);
+});
+
+askFlavor = function(response, convo) {
+  convo.ask("What is my purpose?", function(response, convo) {
+    convo.say("Oh God....");
+    askSize(response, convo);
+    convo.next();
+  });
+}
+askSize = function(response, convo) {
+  convo.ask("Did you want some butter? Because I can do that at least.", function(response, convo) {
+    convo.say("Ok.")
+    askWhereDeliver(response, convo);
+    convo.next();
+  });
+}
+askWhereDeliver = function(response, convo) {
+  convo.ask("Does not compute.......", function(response, convo) {
+    convo.say("Shutting down");
+    convo.next();
+  });
+}
 
 
 /**
